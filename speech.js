@@ -2,12 +2,13 @@ var util = require('util');
 
 module.exports = {
     likelihoodToEnglish: function(n){
-        switch (n){
+        n *= 1;
+        switch (true){
             case (n < 10):
                 return 'Almost certainly not'
-            case (n >= 0 && n <= 15):
+            case (n >= 11 && n <= 40):
                 return 'Probably not'
-            case (n >= 16 && n <= 60):
+            case (n >= 41 && n <= 60):
                 return 'Even chances'
             case (n >= 61 && n <= 89):
                 return 'Probably'
