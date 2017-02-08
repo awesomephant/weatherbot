@@ -52,27 +52,41 @@ intents.matches('getCurrentWeather', [
 ]);
 
 intents.matches('getWeatherForecast', [
-    function (session, args, next) {
+    function (session, args) {
+
+        session.sendTyping();
         var location = builder.EntityRecognizer.findEntity(args.entities, 'geo');
-        var weather = builder.EntityRecognizer.findEntity(args.entities, 'weatherCondition');
+        var partial = builder.EntityRecognizer.findEntity(args.entities, 'weatherCondition');
         var date = builder.EntityRecognizer.findEntity(args.entities, 'builtin.datetime.date');
         var time = builder.EntityRecognizer.findEntity(args.entities, 'builtin.datetime.time');
         if (location) {
+            session.dialogData.location = location;
+        } else if (session.dialogData.location) {
+            location = session.dialogData.location;
         }
-        if (weather) {
-            //            session.send('weather: %s', weather.entity)
+
+        if (date) {
+            session.dialogData.date = date;
+        } else {
+            date = session.dialogData.date;
         }
         if (date) {
-            console.log('date entity: %s', date.entity)
-            console.log('date resolution: %s', date.resolution.date)
-            console.log('date res: %s', date.resolution.date)
             met.getForecastAddress(location.entity, date.resolution.date, function (data, mapsResult) {
                 var formattedDate = dateFormat(date.resolution.date, 'dddd, mmm. d')
-                session.send("Here's the forecast for %s: Max temperature: %s, chance of rain %s%%", formattedDate, data.day.Dm, data.day.PPd);
+                if (partial.entity === 'rain') {
+                    var rainPhrase = speech.likelihoodToEnglish(data.day.PPd);
+                    session.send("%s. We think the chance of rain on %s is about %s%%", rainPhrase, formattedDate, data.day.PPd);
+                } else if (partial.entity === 'temperature' || partial.entity === 'hot' || partial.entity === 'cold' || partial.entity === 'warm' || partial.entity === 'col') {
+                    session.send("We think it's going to be up to %s°C during the day and around %s°C during the night.", data.day.Dm, data.night.Nm);
+                } else if (partial.entity === 'wind' || partial.entity === 'windy') {
+                    var direction = speech.windDirectionToEnglish(data.day.D)
+                    session.send("We think the wind is going to be %smph coming from the %s. There might gusts of wind up to %smph.", data.day.S, direction, data.day.Gn);
+                } else {
+                    session.send("Here's the forecast for %s: Max temperature: %s, chance of rain %s%%", formattedDate, data.day.Dm, data.day.PPd);
+                }
             });
 
         }
-        next();
     },
     function (session, results) {
         session.endDialog();
