@@ -11,12 +11,17 @@ module.exports = {
             res.on('end', () => {
                 var data = JSON.parse(rawData)
                 var results = {};
-                results.coordinates = [
-                    data.results[0].geometry.location.lat,
-                    data.results[0].geometry.location.lng,
-                ]
-                results.formattedAddress = data.results[0].formatted_address;
-                callback(results);
+                if (data.status != 'ZERO_RESULTS') {
+                    results.coordinates = [
+                        data.results[0].geometry.location.lat,
+                        data.results[0].geometry.location.lng,
+                    ]
+                    results.formattedAddress = data.results[0].formatted_address;
+                    callback(results);
+                } else {
+                    console.log("ERROR: Couldn't geocode address")
+                    callback(null);
+                }
             })
         });
     }

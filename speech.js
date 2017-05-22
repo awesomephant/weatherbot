@@ -1,9 +1,9 @@
 var util = require('util');
 
 module.exports = {
-    likelihoodToEnglish: function(n){
+    likelihoodToEnglish: function (n) {
         n *= 1;
-        switch (true){
+        switch (true) {
             case (n < 10):
                 return 'Almost certainly not'
             case (n >= 11 && n <= 40):
@@ -16,9 +16,22 @@ module.exports = {
                 return 'Almost certainly'
         }
     },
-    weatherTypeToEnglish: function(code){
-        console.log('code: ' + code)
-        switch (code){
+    windSpeedToEnglish: function (speed) {
+        console.log('Converting windspeed to english...')
+        if (speed < 1){
+            return 'wind calm'
+        } else if (speed >= 1 && speed <= 11){
+            return 'light breeze'
+        } else if (speed >= 12 && speed < 28){
+            return 'moderate breeze';
+        } else if (speed >= 29 && speed <= 49){
+            return 'strong breeze'
+        } else if (speed >= 50) {
+            return 'very strong wind'
+        }
+    },
+    weatherTypeToEnglish: function (code) {
+        switch (code) {
             case '1':
                 return '☀ Sunny'
             case '2':
@@ -41,8 +54,8 @@ module.exports = {
                 return 'Heavy Rain'
         }
     },
-    windDirectionToEnglish: function(code){
-        switch (code){
+    windDirectionToEnglish: function (code) {
+        switch (code) {
             case 'NNW':
             case 'N':
             case 'NNE':
@@ -68,12 +81,5 @@ module.exports = {
             case 'NW':
                 return 'nort-west ↖'
         }
-    },
-    currentWeatherToEnglish: function(data, result, callback){
-        var weatherType = module.exports.weatherTypeToEnglish(data.W);
-        var windDirection = module.exports.windDirectionToEnglish(data.D);
-        console.log(weatherType);
-        var s = util.format("Here's the current weather for %s: %s at %s°C, windspeed is %smph.",  result.formattedAddress, weatherType, data.T, data.S);
-        return s;
     }
 }

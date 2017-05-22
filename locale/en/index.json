@@ -1,0 +1,11 @@
+{
+    "greeting": ["Hi!", "sup"],
+    "instructions": "I can get you accurate weather information from the UK Met Office. Try it now, say **\"What's the weather going to be this Friday?\"**",
+    "currentWeather": "Last time we checked (%s %s ago) the weather in %s was as follows: %s at %s°C, %smph wind",
+    "windForecast": "We think the wind is going to be %smph coming from the %s. There might gusts of wind up to %smph.",
+    "temperatureForecast": "We think it's going to be up to %s°C during the day and around %s°C during the night.",
+    "rainForecast": "%s (There's about a %s%% chance)",
+    "generalForecast": "Here's the forecast for %s: %s with a %s%% chance of rain, %s. Maximum temperature %s°C.",
+    "addressNotFound": "Sorry, we couldn't find that address. What's the next bigger town or city?",
+    "confidence": "We're pretty confident. Our temperature forecasts are usually within two degrees "
+}

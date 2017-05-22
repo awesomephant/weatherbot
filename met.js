@@ -11,21 +11,36 @@ module.exports = {
 
     },
     getForecastAddress: function (address, date, callback) {
-        maps.geocode(address + ', uk', function (result) { //Append UK to make sure we only get places in the uk
-            module.exports.findNearestFcsSite(result.coordinates, function (site) {
+        maps.geocode(address + ', uk', function (mapsResult) { //Append UK to make sure we only get places in the uk
+            module.exports.findNearestFcsSite(mapsResult.coordinates, function (site) {
                 module.exports.getForecast(site.id, date, function (data) {
-                    callback(data, result);
+                    data.maps = mapsResult;
+                    callback(data);
                 })
             })
         });
     },
     getCurrentWeatherAddress: function (address, callback) {
         maps.geocode(address + ', uk', function (mapsResult) { //Append UK to make sure we only get places in the uk
-            module.exports.findNearestObsSite(mapsResult.coordinates, function (site) {
-                module.exports.getCurrentWeather(site.id, function (data) {
-                    callback(data, mapsResult);
+            if (mapsResult){
+                module.exports.findNearestObsSite(mapsResult.coordinates, function (site) {
+                    module.exports.getCurrentWeather(site.id, function (data) {
+                        data.maps = mapsResult;
+                         var now = new Date(),
+                        then = new Date(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            now.getDate(),
+                            0, 0, 0),
+                        currentMinutesAfterMidnight = (now.getTime() - then.getTime()) / 1000 / 60;; // difference in milliseconds
+
+                        data.timeSinceObs = Math.round(currentMinutesAfterMidnight - data.$);
+                        callback(data);
+                    })
                 })
-            })
+            } else {
+                callback('ADDRESS_NOT_FOUND', null)
+            }
         });
     },
     findNearestObsSite: function (location, callback) {
